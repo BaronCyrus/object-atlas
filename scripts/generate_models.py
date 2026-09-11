@@ -98,9 +98,16 @@ for key in ['g17','92fs','1911']:
         profile('Grip surface',gripcoords,.055,grip,'grip',side*.245,.04)
         # Decorative relief, intentionally stylized and unrelated to manufacturing.
         for row in range(15):
-            z=-.06-row*.067; x=.65+row*.025
+            z=-.06-row*.067
+            crossings=[]
+            for i,(ax,az) in enumerate(gripcoords):
+                bx,bz=gripcoords[(i+1)%len(gripcoords)]
+                if min(az,bz) <= z < max(az,bz):
+                    crossings.append(ax+(z-az)*(bx-ax)/(bz-az))
+            left,right=min(crossings)+.055,max(crossings)-.055
             for col in range(5):
-                o=box('Grip pattern',(x+col*.068,side*.281,z),(.022,.012,.028),detail,'grip',.005)
+                x=left+(right-left)*col/4
+                o=box('Grip pattern',(x,side*.281,z),(.022,.012,.028),detail,'grip',.005)
                 o.rotation_euler[1]=.7
         if key!='g17':
             for x,z in [(.75,-.11),(1.0,-.92)]:
