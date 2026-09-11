@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f3f2ec" />
+  <meta name="description" content="构物：一座可以转动的微型博物馆。观察三款手枪参考展品的外形、材质与设计，听中文讲解，探索基础物理。" />
+  <title>构物 · 手枪图鉴 — 可转动的微型博物馆</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到展厅</a>
+  <header class="header">
+    <a class="brand" href="#gallery" aria-label="构物首页"><span class="brand-mark">构</span><span>构物<span class="brand-en">OBJECT ATLAS</span></span></a>
+    <nav aria-label="主要导航">
+      <a class="active" href="#gallery">互动展厅<span>01</span></a>
+      <a href="#lab">物理小实验<span>02</span></a>
+      <a href="#safety">安全小课堂<span>03</span></a>
+    </nav>
+    <button class="about-btn" id="about-open">关于图鉴 <span>↗</span></button>
+  </header>
+  <main id="main">
+    <section class="intro" id="gallery">
+      <div><div class="eyebrow"><span class="tiny-dot"></span> 一座可以转动的微型博物馆</div><h1>从看见，到<span>看懂。</span></h1><p>转动一件展品，发现形状、材质与设计里的小秘密。</p></div>
+      <div class="collection-title"><span>COLLECTION / 001</span><strong>手枪 · 外观观察</strong><small>3 件参考展品 · 原创示意模型</small></div>
+    </section>
+    <section class="exhibition" aria-label="手枪互动展厅">
+      <aside class="catalog">
+        <div class="section-label"><h2>展品目录</h2><span>03 件</span></div>
+        <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜索展品名称…" aria-label="搜索展品" /></label>
+        <div id="catalog-list"></div>
+        <p id="no-results" hidden>没有找到展品，试试 GLOCK、Beretta 或 Colt。</p>
+        <div class="catalog-note"><span>☉</span><div><strong>带着好奇心来观察</strong><p>这里的模型只表达外观，<br />适合与成年人一起探索。</p></div></div>
+      </aside>
+      <div class="display-column">
+        <div class="viewer" id="viewer">
+          <div class="viewer-top"><span class="viewer-badge"><i></i> 3D 互动展品</span><span class="viewer-edition" id="viewer-edition">EXHIBIT 01 / 03</span></div>
+          <div class="viewer-watermark" id="watermark" aria-hidden="true">G17</div>
+          <canvas id="model-canvas" tabindex="0" aria-label="三维展品。拖动旋转，滚轮缩放，方向键转动，R 复位。"></canvas>
+          <div class="load-state" id="load-state" role="status">正在布置展品…</div>
+          <div class="view-presets" aria-label="观察角度"><button class="active" data-view="perspective">立体</button><button data-view="side">侧面</button><button data-view="front">正面</button></div>
+          <div class="hotspots" id="hotspots"></div>
+          <div class="viewer-caption"><span id="viewer-subtitle">原创外观示意 · 非等比例</span><span>拖动旋转 <b>·</b> 滚轮 / 双指缩放</span></div>
+          <div class="viewer-toolbar"><button id="explode" aria-pressed="false"><span>▱</span> 分开展示</button><span class="toolbar-divider"></span><button id="auto-rotate" aria-pressed="false"><span>⟳</span> 自动旋转</button><button id="reset" aria-label="重置视角与展品"><span>↺</span> 复位</button></div>
+        </div>
+        <div class="observation-strip"><span class="spark">✳</span><div><strong>换个角度，发现不同。</strong><p id="observation"></p></div><span class="strip-arrow">↗</span></div>
+      </div>
+      <aside class="inspector">
+        <div class="eyebrow" id="maker"></div>
+        <h2 id="exhibit-name"></h2><div class="version" id="version"></div>
+        <div class="inspector-tabs" role="tablist" aria-label="展品信息"><button role="tab" id="tab-observe" aria-controls="panel-observe" aria-selected="true" tabindex="0">外观探索</button><button role="tab" id="tab-facts" aria-controls="panel-facts" aria-selected="false" tabindex="-1">展品档案</button></div>
+        <div role="tabpanel" id="panel-observe" aria-labelledby="tab-observe">
+          <p class="lead" id="exhibit-intro"></p>
+          <div class="parts-title"><span>点击一个观察区</span><span>4 个区域</span></div>
+          <div id="region-list"></div>
+          <div class="region-detail" aria-live="polite"><span class="mini-label" id="region-en">LOOK A LITTLE CLOSER</span><h3 id="region-name">先看整体，再看细节</h3><p id="region-description">点击模型上的标记，或选择上方卡片，开启一段外观探索。</p></div>
+        </div>
+        <div role="tabpanel" id="panel-facts" aria-labelledby="tab-facts" hidden>
+          <p class="lead">每一条资料，都对应一个具体版本。</p><dl id="facts"></dl>
+          <p class="fact-note">容量为所列版本的标准弹匣标称值，不含膛内数量；其他版本与地区配置可能不同。</p>
+          <p class="fact-note">后坐力没有统一星级：体感与多种条件有关。去下方小车实验，先认识动量。</p>
+          <a class="source-link" id="source" target="_blank" rel="noopener noreferrer">查看官方来源 ↗</a><small class="checked">资料核对：2026-09-11</small>
+        </div>
+        <div class="audio-card"><div class="audio-title"><span>♪ 中文语音导览</span><label>语速 <select id="speech-rate" aria-label="朗读语速"><option value="0.8">0.8×</option><option value="1" selected>1.0×</option><option value="1.2">1.2×</option></select></label></div><div class="audio-controls"><button class="play" id="speak">▶ 听讲解</button><button id="pause" disabled>暂停</button><button id="stop" disabled>停止</button></div><p id="speech-status" role="status">正在检查中文语音…</p></div>
+      </aside>
+    </section>
+    <div class="exhibition-footer"><span><i></i> 观察设计，理解物理，记住安全。</span><span>外观示意模型，不代表真实内部结构或装配关系。</span></div>
+    <section class="learning-section" id="lab">
+      <div class="learning-heading"><div class="eyebrow">02 / LITTLE PHYSICS LAB</div><h2>一起出发，向相反方向。</h2><p>两辆静止的小车相互推开，为什么轻的小车跑得更快？</p></div>
+      <div class="lab-card"><div class="lab-stage" id="lab-stage"><div class="lab-grid"></div><div class="cart cart-a" id="cart-a"><span>A</span><small>1 kg</small></div><div class="push-mark">↔</div><div class="cart cart-b" id="cart-b"><span>B</span><small id="cart-label">2 kg</small></div><div class="track"></div><span class="lab-stage-label">理想水平轨道 · 忽略摩擦</span></div><div class="lab-controls"><label for="mass">B 车的质量 <output id="mass-value">2 kg</output></label><input id="mass" type="range" min="1" max="4" step="1" value="2" /><div class="range-labels"><span>1 kg</span><span>4 kg</span></div><button class="primary-button" id="run-experiment">让小车出发 <span>→</span></button><p id="lab-result" aria-live="polite">推开时，两辆小车得到大小相等、方向相反的动量。</p><small>仅演示一般物理规律，不用于估算真实枪械后坐力。</small></div></div>
+    </section>
+    <section class="learning-section safety-section" id="safety"><div class="learning-heading"><div class="eyebrow">03 / STAY CURIOUS, STAY SAFE</div><h2>好奇，也要懂得保护自己。</h2><p>如果生活中遇到像枪的物品，记住这三步。</p><div class="safety-steps"><span><b>01</b> 不触碰</span><span><b>02</b> 离开</span><span><b>03</b> 告诉成年人</span></div></div><div class="quiz-card"><div class="quiz-top"><span>情境小问答</span><span id="quiz-number">01 / 03</span></div><h3 id="quiz-question"></h3><div id="quiz-options"></div><p id="quiz-feedback" role="status"></p><button id="quiz-next" hidden>下一个情境 →</button></div></section>
+  </main>
+  <footer class="site-footer"><div class="brand"><span class="brand-mark">构</span><span>构物<span class="brand-en">OBJECT ATLAS</span></span></div><p>让知识有形，让好奇发生。</p><a href="https://github.com/BaronCyrus/object-atlas" target="_blank" rel="noopener noreferrer">开源项目 ↗</a><button id="footer-about">来源与许可</button></footer>
+  <dialog id="about-dialog"><button class="close-dialog" id="about-close" aria-label="关闭关于图鉴">×</button><div class="eyebrow">ABOUT OBJECT ATLAS</div><h2>观察世界的另一种方式。</h2><p>构物是一座开放的微型互动博物馆。本期以三款手枪为参考，从外观设计和基础物理出发，让观察成为学习的开始。</p><p>所有三维资产均为本项目使用 Blender 创作的简化外观示意，不是精确复刻、内部装配模型或制造图纸。分开展示只是拉开四个观察区域的视觉距离。</p><h3>资料与版本</h3><div id="all-sources"></div><p>商标与型号属于各自权利人，仅用于识别参考展品；本项目与制造商无隶属或背书关系。</p><h3>开源与隐私</h3><p>代码、原创模型和配图采用 MIT 许可证。系统语音是否可用取决于浏览器、操作系统和已安装的中文声音；部分系统语音服务可能联网。本站没有分析脚本，也不收集账户信息。</p><a href="https://github.com/BaronCyrus/object-atlas" target="_blank" rel="noopener noreferrer" class="source-link">查看源码与 Blender 资产 ↗</a></dialog>
+  <script type="module" src="./src/main.js"></script>
+</body></html>

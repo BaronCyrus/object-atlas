@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.DS_Store
+*.blend1
+*.blend2
+test-results/
+playwright-report/
+.env*
+reports/*.log
+reports/test-results.json
+reports/*initial.png
