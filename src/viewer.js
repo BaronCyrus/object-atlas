@@ -109,6 +109,8 @@ export class ExhibitViewer {
         ((e.clientX - rect.left) / rect.width) * 2 - 1,
         (-(e.clientY - rect.top) / rect.height) * 2 + 1,
       );
+      this.camera.updateMatrixWorld();
+      this.scene.updateMatrixWorld(true);
       this.raycaster.setFromCamera(this.pointer, this.camera);
       const hit =
         this.model && this.raycaster.intersectObject(this.model, true)[0];
@@ -205,6 +207,8 @@ export class ExhibitViewer {
       .set(...points[name])
       .multiplyScalar(Math.max(1, 1.05 / this.camera.aspect));
     this.controls.update();
+    // Present the new view and annotation positions together before another click.
+    this.animate(performance.now());
   }
   async load(id) {
     const token = ++this.token;

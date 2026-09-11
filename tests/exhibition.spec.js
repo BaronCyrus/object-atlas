@@ -52,6 +52,7 @@ test("model raycasting, highlighting, separated regions and reset work", async (
 }) => {
   await ready(page);
   await page.getByRole("button", { name: "侧面", exact: true }).click();
+  await page.locator('.hotspot[data-region="upper"]').hover();
   // Click the upper surface near its annotation, away from the HTML button.
   const marker = await page
     .locator('.hotspot[data-region="upper"]')
