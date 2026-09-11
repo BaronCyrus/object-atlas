@@ -1,0 +1,70 @@
+{
+  "url": "https://baroncyrus.github.io/object-atlas/",
+  "checkedAt": "2026-09-11T15:46:54.197Z",
+  "homepageStatus": 200,
+  "assets": [
+    {
+      "path": "./assets/index-C2x3Ub9s.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "bytes": 663262,
+      "sha256": "a06da232967df4294c6c668869604bb16f1ca8fbe927c4b35bd2fccd5df56730"
+    },
+    {
+      "path": "./assets/index-DoGh7nsZ.css",
+      "status": 200,
+      "contentType": "text/css; charset=utf-8",
+      "bytes": 19689,
+      "sha256": "09a45a083769597c2398d36a9b6b7c24a3691e86b7bed467fdc1276ae643092f"
+    },
+    {
+      "path": "favicon.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "bytes": 211,
+      "sha256": "e245a90ec8587c2a2725bc74ea05f1c6b83d7a445683a23ee7dd50da1b46c479"
+    },
+    {
+      "path": "models/g17.glb",
+      "status": 200,
+      "contentType": "model/gltf-binary",
+      "bytes": 1875744,
+      "sha256": "c0a0c446413db78d13664cb45e65393af3468c34b47463e94d75dbd408deb4e1"
+    },
+    {
+      "path": "images/g17.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 407364,
+      "sha256": "4fc369be580bbf42806d1f9e461bc7e47cef6e3d40e36045631151635e5fbe92"
+    },
+    {
+      "path": "models/92fs.glb",
+      "status": 200,
+      "contentType": "model/gltf-binary",
+      "bytes": 1843472,
+      "sha256": "e0998f294888debb2f6c16971e96dd47655f306e10be05fc0083268bb518db04"
+    },
+    {
+      "path": "images/92fs.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 409503,
+      "sha256": "71426838a1d5c0b7e8fce5fe4747c7233ba03df563d1a8683053002ba3c15318"
+    },
+    {
+      "path": "models/1911.glb",
+      "status": 200,
+      "contentType": "model/gltf-binary",
+      "bytes": 1828412,
+      "sha256": "c0d81a6d04e82e57b8baf6f5e105989a5fcc8e82e62571841568089936a01f4d"
+    },
+    {
+      "path": "images/1911.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 416433,
+      "sha256": "d680ebe41af5c235001e2ab8aa2f265e6e7985f5ef72e91950f3d71758385729"
+    }
+  ]
+}

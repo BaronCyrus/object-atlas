@@ -2,6 +2,15 @@
 
 日期：2026-09-11
 
+## 正式部署
+
+- 正式网址：[构物 · 手枪图鉴](https://baroncyrus.github.io/object-atlas/)。首页 HTTP 200。
+- 部署代码版本：[7daf3ce](https://github.com/BaronCyrus/object-atlas/commit/7daf3ce9cc067ade0d081fb63151daa917166b91)。
+- [GitHub Actions 最终运行](https://github.com/BaronCyrus/object-atlas/actions/runs/34617886284)：浏览器验收、生产构建与 Pages 发布均成功。
+- 正式域名上的完整浏览器复验：**13 / 13 通过**，耗时 17.1 秒。
+- 脚本、样式、图标、三个 GLB 和三张配图共 9 个资源均返回 HTTP 200；SHA-256 与本地生产构建完全一致。详见 [资源校验记录](deployment.json)。
+- 已修正视角切换时相机与标记的同步，并重新生成握把纹理没有越过面板边缘的三款模型与配图。
+
 ## 本机构建与浏览器
 
 - `npm ci` / 固定依赖安装完成；npm 审计没有报告依赖漏洞。
