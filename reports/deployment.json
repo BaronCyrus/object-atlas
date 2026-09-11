@@ -1,21 +1,21 @@
 {
   "url": "https://baroncyrus.github.io/object-atlas/",
-  "checkedAt": "2026-09-11T15:46:54.197Z",
+  "checkedAt": "2026-09-11T16:52:29.397Z",
   "homepageStatus": 200,
   "assets": [
     {
-      "path": "./assets/index-C2x3Ub9s.js",
+      "path": "./assets/index-DCHBYPE0.js",
       "status": 200,
       "contentType": "application/javascript; charset=utf-8",
-      "bytes": 663262,
-      "sha256": "a06da232967df4294c6c668869604bb16f1ca8fbe927c4b35bd2fccd5df56730"
+      "bytes": 669918,
+      "sha256": "c5ced7fc8ae953e0e3a33dc0915c4f0e6f311460ea6cccafcb0393bcf414176e"
     },
     {
-      "path": "./assets/index-DoGh7nsZ.css",
+      "path": "./assets/index-lTto4LGt.css",
       "status": 200,
       "contentType": "text/css; charset=utf-8",
-      "bytes": 19689,
-      "sha256": "09a45a083769597c2398d36a9b6b7c24a3691e86b7bed467fdc1276ae643092f"
+      "bytes": 16300,
+      "sha256": "3c95a74564f9a108adba2a61b5314cbf18337c446357a8cef49eef563ab9935b"
     },
     {
       "path": "favicon.svg",
@@ -28,43 +28,309 @@
       "path": "models/g17.glb",
       "status": 200,
       "contentType": "model/gltf-binary",
-      "bytes": 1875744,
-      "sha256": "c0a0c446413db78d13664cb45e65393af3468c34b47463e94d75dbd408deb4e1"
+      "bytes": 2825480,
+      "sha256": "4cafae0b0538a6a58a558abe442ae71bcf1a82b64062ce97c112d2726f39476f"
     },
     {
       "path": "images/g17.png",
       "status": 200,
       "contentType": "image/png",
-      "bytes": 407364,
-      "sha256": "4fc369be580bbf42806d1f9e461bc7e47cef6e3d40e36045631151635e5fbe92"
+      "bytes": 586473,
+      "sha256": "e7a8b0eddbdd9bb658ad2a5117e80370702062478ec08c9225584ec0fe4b1dcd"
     },
     {
       "path": "models/92fs.glb",
       "status": 200,
       "contentType": "model/gltf-binary",
-      "bytes": 1843472,
-      "sha256": "e0998f294888debb2f6c16971e96dd47655f306e10be05fc0083268bb518db04"
+      "bytes": 7592440,
+      "sha256": "ef77d9937ba8df9cdd6a2b4c4c4bf3eae520813d5462e8be43d7fdf3e10b0782"
     },
     {
       "path": "images/92fs.png",
       "status": 200,
       "contentType": "image/png",
-      "bytes": 409503,
-      "sha256": "71426838a1d5c0b7e8fce5fe4747c7233ba03df563d1a8683053002ba3c15318"
+      "bytes": 584228,
+      "sha256": "253f6628f1cabdc29d53c7c6dfcf7190b407685317fedbb8fa40c170d18cd3dc"
     },
     {
       "path": "models/1911.glb",
       "status": 200,
       "contentType": "model/gltf-binary",
-      "bytes": 1828412,
-      "sha256": "c0d81a6d04e82e57b8baf6f5e105989a5fcc8e82e62571841568089936a01f4d"
+      "bytes": 13435732,
+      "sha256": "b28a3d9d2da869a61ec263fcb7b463f9f97c736ab7bd6f0d79c7bdf7a11047e4"
     },
     {
       "path": "images/1911.png",
       "status": 200,
       "contentType": "image/png",
-      "bytes": 416433,
-      "sha256": "d680ebe41af5c235001e2ab8aa2f265e6e7985f5ef72e91950f3d71758385729"
+      "bytes": 655279,
+      "sha256": "534393d634978a47d32771edd1208402c85e0f8af077428639ebbf7e380e75c1"
+    },
+    {
+      "path": "audio/narration.json",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4804,
+      "sha256": "d187c9c56529424eea5e74ea4765ec013ca7b4b720c2e45854a79495cae59064"
+    },
+    {
+      "path": "audio/animation.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 83756,
+      "sha256": "fff437dd4a2cd54d9a6c42279867a783c175867dbf0d4ac67f17d7be129070af"
+    },
+    {
+      "path": "audio/g17-intro.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 68588,
+      "sha256": "b7b4e0994e0cf4323bb88fa92c4684484aec70fb92a56dd3169bf96cdef9b1e4"
+    },
+    {
+      "path": "audio/g17-slide.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 71468,
+      "sha256": "eac4b88e364fa3b035b313a3cc7b374f419288a179a974fc9b42e6e3c5aa4fdb"
+    },
+    {
+      "path": "audio/g17-barrel.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 61100,
+      "sha256": "24f7cc2a93c24ebfdea45ccc98f209a7c9391539d1b243121c25d62c3f67ff30"
+    },
+    {
+      "path": "audio/g17-frame.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 59756,
+      "sha256": "ca1bbbd80f29181694b9e407c9609b1f8b66f43872bb603a08c6331e4e1b5adf"
+    },
+    {
+      "path": "audio/g17-grip.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 59180,
+      "sha256": "12bdc7d0572356f774623e4d6996bcc17ca0eca8e5136b101083803b2239050d"
+    },
+    {
+      "path": "audio/g17-guard.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 65516,
+      "sha256": "ceb1dd89b1a849cc6ca322e79372ee7d882294cd540a07f44cf7e2a4de6612de"
+    },
+    {
+      "path": "audio/g17-trigger.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 62828,
+      "sha256": "9577e7d417e4df97fb4fceb9cb55f65eb7eb8275d5dc8bdaa11bbba7c1d5cd40"
+    },
+    {
+      "path": "audio/g17-front_sight.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 55724,
+      "sha256": "aa8d2d167d2e28c8b0033d70e6f4d5ba49c8a2f6e3b66c31f1bd15dc47cb4576"
+    },
+    {
+      "path": "audio/g17-rear_sight.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 58220,
+      "sha256": "7d3aa1fc62bd3152d94645ba64700cca333c2a6a51b70f9d30f64b497d20bc5b"
+    },
+    {
+      "path": "audio/g17-magazine.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 58604,
+      "sha256": "fac387387fee998b809bf2661151ea231cf8e8ab4ea17a67bbfa27119594a6b0"
+    },
+    {
+      "path": "audio/g17-controls.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 79724,
+      "sha256": "3be1bdcd6a52ce59111d1c5bc0e2d1f586c9440ed4262abeb830827ff38a0e00"
+    },
+    {
+      "path": "audio/g17-rear.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 79532,
+      "sha256": "f6d24b757fd3169fc907a62a100ec6f989198bacb25d36a2fda4f0c3ccf3c0fa"
+    },
+    {
+      "path": "audio/92fs-intro.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 79340,
+      "sha256": "218c96e2bd6f0b0a6d60d16abcdb8333bb1fb6b379e127f6a220e0274b9ea032"
+    },
+    {
+      "path": "audio/92fs-slide.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 74156,
+      "sha256": "278700e86cc8fe2858f1ba07811a38d41964b26b6ff303bced1e1203508fd02d"
+    },
+    {
+      "path": "audio/92fs-barrel.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 61100,
+      "sha256": "fed68adc7cfd9ba31dbe3df0b919ee7d42618cd081284bb78496d4269cd5f281"
+    },
+    {
+      "path": "audio/92fs-frame.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 59756,
+      "sha256": "17cb8b9276c42e8fa5eec9291a0e5f3b334a46da8a2d5558fed121bff6a29589"
+    },
+    {
+      "path": "audio/92fs-grip.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 57260,
+      "sha256": "b710bf2cfeafbbf6804bd9b15e3ea41a534fb2926a54f00b8ff6c0b1c46489a1"
+    },
+    {
+      "path": "audio/92fs-guard.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 65516,
+      "sha256": "eabc46e57706351c0c62ec2c377e22f475bf21a7b04b8498fb841594343ce4f4"
+    },
+    {
+      "path": "audio/92fs-trigger.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 62828,
+      "sha256": "25e7bb646d5e332ad7d6bda81a225ebc1389443fbd3788ee3778e9c6eae90123"
+    },
+    {
+      "path": "audio/92fs-front_sight.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 55724,
+      "sha256": "6d0a929f18b963b65c2a9ba2e1df6d609a7382ebd270a2c8ef3e043b41572e35"
+    },
+    {
+      "path": "audio/92fs-rear_sight.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 58220,
+      "sha256": "20bf56cdfb7fb1ac35a600123bbcfdff7aa4ee4c11f6e3215808777b6796e9b8"
+    },
+    {
+      "path": "audio/92fs-magazine.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 58604,
+      "sha256": "056eedc25ffbd7039ef91816877d303daede95e64c411778577825e41f3bacbe"
+    },
+    {
+      "path": "audio/92fs-controls.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 79724,
+      "sha256": "93ac86eb21f1b77cb74489f44110eea42673743e0a301d39429cd4a52ec1ae5a"
+    },
+    {
+      "path": "audio/92fs-rear.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 64748,
+      "sha256": "942b96d587e5ad007b76952b1cad3b03bfb25e8ace95fc9afeb0c9602a68ef5c"
+    },
+    {
+      "path": "audio/1911-intro.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 65900,
+      "sha256": "68bb5201657e43fe5451a4749719723bb4b50147f94b222df963e3f29599abe3"
+    },
+    {
+      "path": "audio/1911-slide.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 59564,
+      "sha256": "99aa7104026bd6028fb4a7d2b0d3b14ad314fe4ef33c0547ffdc4c5afe3d94ea"
+    },
+    {
+      "path": "audio/1911-barrel.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 61100,
+      "sha256": "51b2f59475aaebf8dba7ca4f888a3a5ff5e614a05d6ba38b0275661f61471bcf"
+    },
+    {
+      "path": "audio/1911-frame.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 59756,
+      "sha256": "04bb995922faff2181c7f9ad48f18d8d6b980b059a2771838c601b0a37b79965"
+    },
+    {
+      "path": "audio/1911-grip.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 69740,
+      "sha256": "ddd45fd6b2128ff6a608582667d8068532308d3f4e814a21989bc271b8ffedf1"
+    },
+    {
+      "path": "audio/1911-guard.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 65516,
+      "sha256": "3a1e95aebf2cba433105759bd5ad8920977c04404221029d74bd2ad12e8af598"
+    },
+    {
+      "path": "audio/1911-trigger.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 62828,
+      "sha256": "7b24ff14fbbf56c465d445cb8acea78d13615a0fb006f72b2c37c34de1cbb273"
+    },
+    {
+      "path": "audio/1911-front_sight.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 55724,
+      "sha256": "0a889fa99c4951869aa7a1eb21d6c62c31c8be8c54bd6d9c82ab08a186b69b74"
+    },
+    {
+      "path": "audio/1911-rear_sight.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 58220,
+      "sha256": "e557cdcf2e8f7b8e004e011c88c354ed14786fa8384355f0e402afdd3813cfbd"
+    },
+    {
+      "path": "audio/1911-magazine.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 58604,
+      "sha256": "b3828769aec6ae72a7c6d93ee5a2ee6345737aad43febd8b79447d4de2ad0420"
+    },
+    {
+      "path": "audio/1911-controls.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 79724,
+      "sha256": "de1808595806ac18e156159be43d3fbce0671cb32d519f8b4db91247b77cae7f"
+    },
+    {
+      "path": "audio/1911-rear.mp3",
+      "status": 200,
+      "contentType": "audio/mp3",
+      "bytes": 73772,
+      "sha256": "4d8a43a0d38eac9ad66def03dd3e9ff00dbf56bc84ef2004d6ca58b4d80d8ca7"
     }
   ]
 }

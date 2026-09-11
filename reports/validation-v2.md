@@ -2,6 +2,14 @@
 
 日期：2026-09-12。
 
+## 正式部署
+
+- 正式网址：[构物 · 认识手枪](https://baroncyrus.github.io/object-atlas/?v=2)。首页 HTTP 200。
+- 线上代码版本：[e666a44](https://github.com/BaronCyrus/object-atlas/commit/e666a446834335dc9609924eabf285b12d3adb78)。
+- [GitHub Actions 发布](https://github.com/BaronCyrus/object-atlas/actions/runs/34624053582)：构建、16 项浏览器验收和 Pages 部署均成功。
+- 正式域名上的复验：**16 / 16 通过**，耗时 27.6 秒。
+- 脚本、样式、图标、三款 GLB、三张配图、讲解清单及 37 段 MP3，共 **47 个运行资源**均返回 HTTP 200，SHA-256 与本地生产构建一致。详见 [资源校验记录](deployment.json)。
+
 ## 内容和模型
 
 - 按匹配版本的官方外观摄影分别重建三款模型，来源见 [references-v2.md](references-v2.md)。GLOCK 有侧、前、顶部等官方摄影角度；后两款没有可靠完整三视图，未核实部分采用艺术近似。
