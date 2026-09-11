@@ -1,17 +1,71 @@
 [
   {
     "model": "g17",
-    "objects": 200,
-    "glb_bytes": 1875744
+    "regions": [
+      "slide",
+      "barrel",
+      "frame",
+      "grip",
+      "guard",
+      "trigger",
+      "front_sight",
+      "rear_sight",
+      "magazine",
+      "controls",
+      "rear"
+    ],
+    "objects": 70,
+    "glb_bytes": 2825480,
+    "muzzle": [
+      -1.92,
+      0.86,
+      0
+    ]
   },
   {
     "model": "92fs",
-    "objects": 197,
-    "glb_bytes": 1843472
+    "regions": [
+      "slide",
+      "barrel",
+      "frame",
+      "grip",
+      "guard",
+      "trigger",
+      "front_sight",
+      "rear_sight",
+      "magazine",
+      "controls",
+      "rear"
+    ],
+    "objects": 532,
+    "glb_bytes": 7592440,
+    "muzzle": [
+      -1.91,
+      1.045,
+      0
+    ]
   },
   {
     "model": "1911",
-    "objects": 195,
-    "glb_bytes": 1828412
+    "regions": [
+      "slide",
+      "barrel",
+      "frame",
+      "grip",
+      "guard",
+      "trigger",
+      "front_sight",
+      "rear_sight",
+      "magazine",
+      "controls",
+      "rear"
+    ],
+    "objects": 1064,
+    "glb_bytes": 13435732,
+    "muzzle": [
+      -2.07,
+      0.906,
+      0
+    ]
   }
 ]

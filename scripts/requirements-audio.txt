@@ -1,0 +1,6 @@
+kokoro==0.9.4
+misaki[zh]==0.9.4
+torch==2.14.0
+soundfile==0.14.0
+numpy==2.4.6
+Pillow==12.3.0

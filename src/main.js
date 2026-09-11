@@ -1,24 +1,23 @@
 import "./style.css";
-import { exhibits, regions, scenarios, cartVelocity } from "./data.js";
+import {
+  exhibits,
+  regions,
+  regionInfo,
+  animationNarration,
+  assetVersion,
+} from "./data.js";
 import { ExhibitViewer } from "./viewer.js";
 import { GuideSpeech } from "./speech.js";
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => [...document.querySelectorAll(selector)];
-const base = import.meta.env.BASE_URL;
+const $ = (s) => document.querySelector(s),
+  $$ = (s) => [...document.querySelectorAll(s)],
+  base = import.meta.env.BASE_URL;
 let current = exhibits[0],
   selectedRegion = null,
   viewer;
-const catalog = $("#catalog-list");
-catalog.innerHTML = exhibits
+$("#catalog-list").innerHTML = exhibits
   .map(
     (e) =>
-      `<button class="exhibit-card" data-id="${e.id}" aria-pressed="false" aria-label="查看 ${e.fullName}"><span class="card-top"><span>NO. ${e.number}</span><span class="selected-mark" aria-hidden="true"></span></span><img class="card-image" src="${base}images/${e.id}.png" alt="${e.fullName} 原创外观模型" width="192" height="100" /><span class="card-title">${e.name}</span><span class="card-bottom"><span>${e.version}</span><span>${e.tone}</span></span></button>`,
-  )
-  .join("");
-$("#region-list").innerHTML = regions
-  .map(
-    (r, i) =>
-      `<button class="region-button" data-region="${r.id}" aria-pressed="false"><span class="region-index">${i + 1}</span><span class="region-text"><strong>${r.name}</strong><small>${r.hint}</small></span><span class="region-arrow">↗</span></button>`,
+      `<button class="exhibit-card" data-id="${e.id}" aria-pressed="false" aria-label="查看 ${e.fullName}"><span class="card-top"><span>NO. ${e.number}</span><span class="selected-mark"></span></span><img class="card-image" src="${base}images/${e.id}.png?v=${assetVersion}" width="192" height="110" alt="${e.fullName} 三维模型配图"/><span class="card-title">${e.cn}</span><span class="card-bottom"><span>${e.version}</span></span></button>`,
   )
   .join("");
 $("#hotspots").innerHTML = regions
@@ -34,19 +33,45 @@ const speech = new GuideSpeech({
   stop: $("#stop"),
   rate: $("#speech-rate"),
 });
-function selectRegion(id) {
+function renderRegions() {
+  $("#region-list").innerHTML = regions
+    .map(
+      (r, i) =>
+        `<button class="region-button" data-region="${r.id}" aria-pressed="false"><span class="region-index" style="--part-color:${r.color}">${i + 1}</span><span class="region-text"><strong>${regionInfo(r.id, current).name}</strong></span><span class="region-audio" aria-hidden="true">♪</span></button>`,
+    )
+    .join("");
+  $$(".region-button").forEach((b) =>
+    b.addEventListener("click", () => selectRegion(b.dataset.region, true)),
+  );
+}
+function narrate() {
+  const id = selectedRegion
+    ? `${current.id}-${selectedRegion}`
+    : `${current.id}-intro`;
+  speech.speak(
+    selectedRegion ? current.descriptions[selectedRegion] : current.intro,
+    `${base}audio/${id}.mp3?v=${assetVersion}`,
+  );
+}
+function selectRegion(id, play = false) {
   selectedRegion = id;
   speech.cancel(false);
   viewer?.select(id);
   $$("[data-region]").forEach((b) =>
     b.setAttribute("aria-pressed", String(b.dataset.region === id)),
   );
-  const region = regions.find((r) => r.id === id);
-  $("#region-en").textContent = region?.en || "LOOK A LITTLE CLOSER";
-  $("#region-name").textContent = region?.name || "先看整体，再看细节";
-  $("#region-description").textContent = region
+  const info = regionInfo(id, current);
+  $("#region-en").textContent = info?.en || "LET’S LOOK CLOSER";
+  $("#region-name").textContent = info?.name || "想先认识哪一部分？";
+  $("#region-description").textContent = info
     ? current.descriptions[id]
-    : "点击模型上的标记，或选择上方卡片，开启一段外观探索。";
+    : "点模型上的圆点，或者点上面的部位名称。";
+  $("#part-callout").hidden = !info;
+  if (info) {
+    $("#callout-index").textContent = regions.findIndex((r) => r.id === id) + 1;
+    $("#callout-name").textContent = info.name;
+  }
+  if (play && $("#auto-speech").checked) narrate();
 }
 function resetButtons() {
   $("#explode").setAttribute("aria-pressed", "false");
@@ -54,9 +79,11 @@ function resetButtons() {
   $$("[data-view]").forEach((b) =>
     b.classList.toggle("active", b.dataset.view === "perspective"),
   );
+  $("#view-caption").textContent = "立体观察";
 }
-function chooseExhibit(id) {
+function chooseExhibit(id, play = false) {
   current = exhibits.find((e) => e.id === id) || exhibits[0];
+  renderRegions();
   $$(".exhibit-card").forEach((b) => {
     const active = b.dataset.id === current.id;
     b.classList.toggle("selected", active);
@@ -75,49 +102,73 @@ function chooseExhibit(id) {
   $("#facts").innerHTML = [
     ["具体版本", current.version],
     ["口径标识", current.caliber],
-    ["标准弹匣容量", `${current.capacity} 发`],
-    ["参考材料", current.material],
+    [
+      "标准弹匣容量",
+      current.capacity ? `${current.capacity} 发` : "官方字段冲突，暂不标注",
+    ],
+    ["材质观察", current.material],
   ]
-    .map(([key, val]) => `<div><dt>${key}</dt><dd>${val}</dd></div>`)
+    .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`)
     .join("");
+  $("#capacity-note").textContent = current.capacity
+    ? "容量仅对应所列标准配置，不包含膛内数量。其他版本和地区配置可能不同。"
+    : "Colt 当前官方页面的变体描述与容量字段不一致，因此不沿用旧版数值。";
   $("#source").href = current.source;
   $("#source").textContent = current.sourceName + " ↗";
+  $("#photo-sources").innerHTML = current.photoSources
+    .map(
+      ([name, url]) =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer">${name}参考 ↗</a>`,
+    )
+    .join("");
   selectRegion(null);
   resetButtons();
-  viewer?.load(current.id);
+  viewer?.load(current);
+  if (play && $("#auto-speech").checked) narrate();
+}
+function animationState({ state, progress, caption }) {
+  const running = state === "playing" || state === "paused";
+  $("#animation-pause").disabled = !running;
+  $("#animation-pause").textContent =
+    state === "paused" ? "继续动画" : "暂停动画";
+  $("#animation-progress").style.width = `${progress * 100}%`;
+  $("#animation-caption").hidden = state === "idle";
+  if (caption) $("#animation-caption").textContent = caption;
+  $("#viewer").dataset.animation = state;
+  $("#shoot").textContent = running ? "↻ 重新看动画" : "▷ 射击动画";
 }
 try {
   viewer = new ExhibitViewer(
     $("#model-canvas"),
-    selectRegion,
+    (id) => selectRegion(id, true),
     (state, message) => {
       $("#viewer").dataset.state = state;
       $("#load-state").hidden = state === "ready";
       $("#load-state").textContent = message || "";
       $("#load-state").style.cursor = state === "error" ? "pointer" : "default";
-      if (state === "error") {
-        $("#load-state").tabIndex = 0;
-        $("#load-state").setAttribute("role", "button");
-      } else {
-        $("#load-state").removeAttribute("tabindex");
-        $("#load-state").setAttribute("role", "status");
-      }
-      $$("#explode,#auto-rotate,#reset,[data-view]").forEach(
+      $("#load-state").setAttribute(
+        "role",
+        state === "error" ? "button" : "status",
+      );
+      if (state === "error") $("#load-state").tabIndex = 0;
+      else $("#load-state").removeAttribute("tabindex");
+      $$("#explode,#auto-rotate,#reset,#shoot,[data-view]").forEach(
         (b) => (b.disabled = state !== "ready"),
       );
     },
+    animationState,
   );
 } catch (e) {
   $("#viewer").dataset.state = "unsupported";
   $("#load-state").textContent =
-    "此设备暂不支持三维显示。你仍可浏览配图、文字、语音与实验。";
-  $$("#explode,#auto-rotate,#reset,[data-view]").forEach(
+    "此设备暂不支持三维显示。你仍可看配图、点部位听讲解。";
+  $$("#explode,#auto-rotate,#reset,#shoot,[data-view]").forEach(
     (b) => (b.disabled = true),
   );
   console.warn("WebGL unavailable", e.message);
 }
 $("#load-state").addEventListener("click", () => {
-  if ($("#viewer").dataset.state === "error") viewer?.load(current.id);
+  if ($("#viewer").dataset.state === "error") viewer?.load(current);
 });
 $("#load-state").addEventListener("keydown", (e) => {
   if (e.key === "Enter" || e.key === " ") {
@@ -126,17 +177,17 @@ $("#load-state").addEventListener("keydown", (e) => {
   }
 });
 $$(".exhibit-card").forEach((b) =>
-  b.addEventListener("click", () => chooseExhibit(b.dataset.id)),
+  b.addEventListener("click", () => chooseExhibit(b.dataset.id, true)),
 );
-$$("[data-region]").forEach((b) =>
-  b.addEventListener("click", () => selectRegion(b.dataset.region)),
+$$(".hotspot").forEach((b) =>
+  b.addEventListener("click", () => selectRegion(b.dataset.region, true)),
 );
 $("#search").addEventListener("input", (e) => {
   const term = e.target.value.trim().toLowerCase();
   let shown = 0;
   $$(".exhibit-card").forEach((b) => {
-    const exhibit = exhibits.find((e) => e.id === b.dataset.id);
-    b.hidden = !`${exhibit.fullName} ${exhibit.maker} ${exhibit.version}`
+    const model = exhibits.find((e) => e.id === b.dataset.id);
+    b.hidden = !`${model.cn} ${model.fullName} ${model.version}`
       .toLowerCase()
       .includes(term);
     if (!b.hidden) shown++;
@@ -165,19 +216,26 @@ $$("[role=tab]").forEach((b) =>
   }),
 );
 $("#explode").addEventListener("click", () => {
-  if (viewer) {
-    viewer.exploded = !viewer.exploded;
-    $("#explode").setAttribute("aria-pressed", String(viewer.exploded));
-  }
+  if (!viewer) return;
+  viewer.setExploded(!viewer.exploded);
+  $("#explode").setAttribute("aria-pressed", String(viewer.exploded));
+  $("#auto-rotate").setAttribute("aria-pressed", "false");
+  $("#view-caption").textContent = viewer.exploded
+    ? "分区观察 · 并非实物拆装"
+    : "整体观察";
 });
 $("#auto-rotate").addEventListener("click", () => {
-  if (viewer) {
-    viewer.controls.autoRotate = !viewer.controls.autoRotate;
-    $("#auto-rotate").setAttribute(
-      "aria-pressed",
-      String(viewer.controls.autoRotate),
+  if (!viewer) return;
+  viewer.stopAnimation();
+  const enable = !viewer.controls.autoRotate;
+  if (enable) {
+    viewer.applyView("perspective");
+    $$("[data-view]").forEach((b) =>
+      b.classList.toggle("active", b.dataset.view === "perspective"),
     );
   }
+  viewer.controls.autoRotate = enable;
+  $("#auto-rotate").setAttribute("aria-pressed", String(enable));
 });
 $("#reset").addEventListener("click", () => {
   viewer?.reset();
@@ -188,20 +246,45 @@ $$("[data-view]").forEach((b) =>
   b.addEventListener("click", () => {
     viewer?.view(b.dataset.view);
     $$("[data-view]").forEach((el) => el.classList.toggle("active", el === b));
+    $("#auto-rotate").setAttribute("aria-pressed", "false");
+    $("#view-caption").textContent =
+      b.dataset.view === "perspective"
+        ? "立体观察"
+        : `${b.textContent} · 正交观察`;
   }),
 );
-$("#speak").addEventListener("click", () =>
-  speech.speak(
-    selectedRegion
-      ? `${regions.find((r) => r.id === selectedRegion).name}。${current.descriptions[selectedRegion]}`
-      : `${current.fullName}。${current.intro}`,
-  ),
+$("#show-labels").addEventListener("change", (e) =>
+  viewer?.setLabels(e.target.checked),
 );
+$("#shoot").addEventListener("click", () => {
+  if (!viewer) return;
+  selectRegion(null);
+  resetButtons();
+  $$("[data-view]").forEach((b) =>
+    b.classList.toggle("active", b.dataset.view === "side"),
+  );
+  $("#view-caption").textContent = "慢动作示意";
+  viewer.playAnimation(Number($("#animation-speed").value));
+  if ($("#auto-speech").checked)
+    speech.speak(
+      animationNarration,
+      `${base}audio/animation.mp3?v=${assetVersion}`,
+    );
+});
+$("#animation-pause").addEventListener("click", () => viewer?.pauseAnimation());
+$("#animation-speed").addEventListener("change", () => {
+  if (viewer?.animation)
+    viewer.playAnimation(Number($("#animation-speed").value));
+});
+$("#speak").addEventListener("click", narrate);
+$("#auto-speech").addEventListener("change", (e) => {
+  if (!e.target.checked) speech.cancel(false);
+});
 const dialog = $("#about-dialog");
 $("#all-sources").innerHTML = exhibits
   .map(
     (e) =>
-      `<a href="${e.source}" target="_blank" rel="noopener noreferrer">${e.fullName} — 官方资料 ↗</a>`,
+      `<a href="${e.source}" target="_blank" rel="noopener noreferrer">${e.fullName} · 官方资料 ↗</a>`,
   )
   .join("");
 $$("#about-open,#footer-about").forEach((b) =>
@@ -220,107 +303,12 @@ dialog.addEventListener("click", (e) => {
       dialog.close();
   }
 });
-let cartAnimations = [];
-function resetLab() {
-  cartAnimations.forEach((a) => a.cancel());
-  cartAnimations = [];
-  const mass = Number($("#mass").value);
-  $("#mass-value").textContent = `${mass} kg`;
-  $("#cart-label").textContent = `${mass} kg`;
-  $("#lab-result").textContent =
-    "推开时，两辆小车得到大小相等、方向相反的动量。";
-}
-$("#mass").addEventListener("input", resetLab);
-$("#run-experiment").addEventListener("click", () => {
-  resetLab();
-  const mass = Number($("#mass").value);
-  const distance = Math.max(15, $("#lab-stage").clientWidth / 2 - 68);
-  const options = { duration: 1800, fill: "forwards", easing: "linear" };
-  cartAnimations.push(
-    $("#cart-a").animate(
-      [
-        { transform: "translateX(0)" },
-        { transform: `translateX(${-distance}px)` },
-      ],
-      options,
-    ),
-    $("#cart-b").animate(
-      [
-        { transform: "translateX(0)" },
-        { transform: `translateX(${distance / mass}px)` },
-      ],
-      options,
-    ),
-  );
-  $("#lab-result").textContent =
-    `A 车向左 ${cartVelocity(1).toFixed(1)} m/s，B 车向右 ${cartVelocity(mass).toFixed(1)} m/s。${mass === 1 ? "质量相同，速度大小相同。" : `B 车质量是 A 的 ${mass} 倍，速度大小是 A 的 1/${mass}。`}两车总动量仍为 0。`;
-});
-let quizIndex = 0;
-function renderQuiz() {
-  const q = scenarios[quizIndex];
-  $("#quiz-number").textContent = `0${quizIndex + 1} / 03`;
-  $("#quiz-question").textContent = q.question;
-  $("#quiz-feedback").textContent = "";
-  $("#quiz-next").hidden = true;
-  $("#quiz-options").innerHTML = q.options
-    .map(
-      (opt, i) =>
-        `<button class="quiz-option" data-option="${i}">${String.fromCharCode(65 + i)}　${opt}</button>`,
-    )
-    .join("");
-  $$(".quiz-option").forEach((b) =>
-    b.addEventListener("click", () => {
-      const correct = Number(b.dataset.option) === q.correct;
-      $$(".quiz-option").forEach((el) => {
-        el.disabled = true;
-        if (Number(el.dataset.option) === q.correct)
-          el.classList.add("correct");
-      });
-      if (!correct) b.classList.add("incorrect");
-      $("#quiz-feedback").textContent =
-        (correct ? "答对了。" : "记住这个更安全的选择：") + q.explanation;
-      $("#quiz-next").textContent =
-        quizIndex === 2 ? "完成啦，再复习一次 ↺" : "下一个情境 →";
-      $("#quiz-next").hidden = false;
-    }),
-  );
-}
-$("#quiz-next").addEventListener("click", () => {
-  quizIndex = (quizIndex + 1) % scenarios.length;
-  renderQuiz();
-});
-const sections = $$("#gallery,#lab,#safety");
-const observer = new IntersectionObserver(
-  (entries) => {
-    const visible = entries
-      .filter((e) => e.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-    if (visible)
-      $$(".header nav a").forEach((a) =>
-        a.classList.toggle("active", a.hash === `#${visible.target.id}`),
-      );
-  },
-  { rootMargin: "-10% 0px -45% 0px", threshold: [0, 0.2, 0.5] },
-);
-sections.forEach((s) => observer.observe(s));
 chooseExhibit("g17");
-renderQuiz();
-// Read-only diagnostics for acceptance tests; no rendering controls exposed.
 window.atlasDiagnostics = () => ({
-  frames: viewer?.frames,
-  sourceMeshes: viewer?.model?.userData.sourceMeshes,
   model: viewer?.modelId,
   ready: viewer?.ready,
   groups: Object.keys(viewer?.groups || {}),
-  active: viewer?.active,
-  expanded: viewer?.exploded,
-  positions: Object.fromEntries(
-    Object.entries(viewer?.groups || {}).map(([k, o]) => [
-      k,
-      o.position.toArray(),
-    ]),
-  ),
-  camera: viewer?.camera.position.toArray(),
+  sourceMeshes: viewer?.model?.userData.sourceMeshes,
   meshes: viewer?.model
     ? (() => {
         let n = 0;
@@ -330,6 +318,33 @@ window.atlasDiagnostics = () => ({
         return n;
       })()
     : 0,
+  active: viewer?.active,
+  frames: viewer?.frames,
+  expanded: viewer?.exploded,
+  positions: Object.fromEntries(
+    Object.entries(viewer?.groups || {}).map(([k, o]) => [
+      k,
+      o.position.toArray(),
+    ]),
+  ),
+  camera: viewer?.camera.position.toArray(),
+  projection: viewer?.camera.type,
+  animation: viewer?.animation
+    ? {
+        progress: viewer.animation.elapsed / viewer.animation.duration,
+        paused: viewer.animation.paused,
+        projectileVisible: viewer.projectile.visible,
+        projectile: viewer.projectile.position.toArray(),
+        recoil: viewer.model.position.x,
+      }
+    : null,
+  audio: {
+    state: speech.state,
+    src: speech.audio?.src,
+    currentTime: speech.audio?.currentTime,
+    duration: speech.audio?.duration,
+    rate: speech.audio?.playbackRate,
+  },
   highlighted: viewer?.model
     ? (() => {
         let n = 0;

@@ -1,109 +1,138 @@
 import { test, expect } from "@playwright/test";
+const state = (page) => page.evaluate(() => window.atlasDiagnostics());
 async function ready(page) {
   await page.goto("./");
-  await expect(page.locator("#viewer")).toHaveAttribute("data-state", "ready");
+  await expect(page.locator("#viewer")).toHaveAttribute("data-state", "ready", {
+    timeout: 20000,
+  });
 }
-const state = (page) => page.evaluate(() => window.atlasDiagnostics());
+const expected = [
+  "slide",
+  "barrel",
+  "frame",
+  "grip",
+  "guard",
+  "trigger",
+  "front_sight",
+  "rear_sight",
+  "magazine",
+  "controls",
+  "rear",
+].sort();
 
-test("three distinct GLB exhibits load with four interactive regions and valid thumbnails", async ({
+test("three rebuilt models load with eleven regions, materials, and valid previews", async ({
   page,
 }) => {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await ready(page);
-  for (const [id, name, capacity] of [
-    ["g17", "GLOCK 17", "17 发"],
-    ["92fs", "Beretta 92FS", "15 发"],
-    ["1911", "Colt 1911", "7 发"],
-  ]) {
+  for (const id of ["g17", "92fs", "1911"]) {
     await page.locator(`.exhibit-card[data-id="${id}"]`).click();
-    await expect.poll(async () => (await state(page)).model).toBe(id);
-    await expect(page.locator("#viewer")).toHaveAttribute(
-      "data-state",
-      "ready",
-    );
+    await expect
+      .poll(async () => (await state(page)).model, { timeout: 20000 })
+      .toBe(id);
     const s = await state(page);
-    expect(s.groups.sort()).toEqual(["frame", "grip", "guard", "upper"]);
-    expect(s.sourceMeshes).toBeGreaterThan(150);
-    expect(s.sourceMeshes).toBeLessThan(220);
-    expect(s.meshes).toBeGreaterThan(4);
-    expect(s.meshes).toBeLessThan(30);
-    await expect(page.locator("#exhibit-name")).toHaveText(name);
-    await page.getByRole("tab", { name: "展品档案" }).click();
-    await expect(page.locator("#facts")).toContainText(capacity);
-    await expect(page.locator("#source")).toHaveAttribute(
-      "href",
-      /^https:\/\//,
-    );
-    await page.getByRole("tab", { name: "外观探索" }).click();
+    expect(s.groups.sort()).toEqual(expected);
+    expect(s.sourceMeshes).toBeGreaterThan(40);
+    expect(s.meshes).toBeLessThan(65);
+    await expect(page.locator(".region-button")).toHaveCount(11);
   }
   expect(
     await page
       .locator(".card-image")
-      .evaluateAll((images) =>
-        images.every((i) => i.complete && i.naturalWidth > 100),
+      .evaluateAll((imgs) =>
+        imgs.every((i) => i.complete && i.naturalWidth >= 1000),
       ),
   ).toBe(true);
   expect(errors).toEqual([]);
 });
 
-test("model raycasting, highlighting, separated regions and reset work", async ({
+test("each visible-part card highlights its own meshes and plays the matching Chinese clip", async ({
   page,
 }) => {
   await ready(page);
-  await page.getByRole("button", { name: "侧面", exact: true }).click();
-  await page.locator('.hotspot[data-region="upper"]').hover();
-  // Click the upper surface near its annotation, away from the HTML button.
-  const marker = await page
-    .locator('.hotspot[data-region="upper"]')
-    .boundingBox();
-  await page.mouse.click(marker.x + 55, marker.y + 12);
-  await expect(page.locator("#region-name")).toHaveText("上部外壳");
-  expect((await state(page)).highlighted).toBeGreaterThan(1);
-  await page.locator('.region-button[data-region="grip"]').click();
-  expect((await state(page)).active).toBe("grip");
-  await page.locator("#explode").click();
-  await expect
-    .poll(async () => (await state(page)).positions.upper[1])
-    .toBeGreaterThan(0.7);
-  expect((await state(page)).positions.grip[2]).toBeGreaterThan(0.4);
-  await page.locator("#reset").click();
-  await expect
-    .poll(async () => (await state(page)).positions.upper[1])
-    .toBeLessThan(0.02);
-  expect((await state(page)).active).toBe(null);
-  expect((await state(page)).highlighted).toBe(0);
+  for (const id of expected) {
+    await page.locator(`.region-button[data-region="${id}"]`).click();
+    expect((await state(page)).active).toBe(id);
+    expect((await state(page)).highlighted).toBeGreaterThan(0);
+    await expect
+      .poll(async () => (await state(page)).audio.src || "")
+      .toContain(`g17-${id}.mp3`);
+    await expect(page.locator("#region-description")).not.toBeEmpty();
+  }
 });
 
-test("drag, wheel, keyboard, presets and auto rotation move the camera", async ({
+test("raycast picks actual slide surface, and detached regions return to their base positions", async ({
   page,
 }) => {
   await ready(page);
-  const before = (await state(page)).camera;
+  await page.locator('[data-view="side"]').click();
+  const dot = page.locator('.hotspot[data-region="slide"]');
+  await dot.hover();
+  const box = await dot.boundingBox();
+  await page.mouse.click(box.x + 57, box.y + 14);
+  await expect(page.locator("#region-name")).toHaveText("套筒");
+  await page.locator("#explode").click();
+  await expect
+    .poll(async () => (await state(page)).positions.slide[1])
+    .toBeGreaterThan(0.6);
+  expect((await state(page)).positions.magazine[1]).toBeLessThan(-0.7);
+  expect((await state(page)).positions.trigger[2]).toBeGreaterThan(0.4);
+  await page.locator("#reset").click();
+  await expect
+    .poll(async () => Math.abs((await state(page)).positions.slide[1]))
+    .toBeLessThan(0.015);
+  await expect
+    .poll(async () => Math.abs((await state(page)).positions.magazine[1]))
+    .toBeLessThan(0.015);
+  expect((await state(page)).active).toBe(null);
+});
+
+test("left, right, top and front are genuine orthographic views", async ({
+  page,
+}) => {
+  await ready(page);
+  const cameras = [];
+  for (const view of ["side", "right", "top", "front"]) {
+    await page.locator(`[data-view="${view}"]`).click();
+    const s = await state(page);
+    expect(s.projection).toBe("OrthographicCamera");
+    cameras.push(s.camera.join(","));
+  }
+  expect(new Set(cameras).size).toBe(4);
+  await page.locator('[data-view="perspective"]').click();
+  expect((await state(page)).projection).toBe("PerspectiveCamera");
+});
+
+test("drag, wheel, keyboard and automatic rotation remain functional", async ({
+  page,
+}) => {
+  await ready(page);
   const box = await page.locator("canvas").boundingBox();
-  await page.mouse.move(box.x + box.width * 0.6, box.y + box.height * 0.6);
+  const before = (await state(page)).camera;
+  await page.mouse.move(box.x + box.width * 0.6, box.y + box.height * 0.65);
   await page.mouse.down();
   await page.mouse.move(
-    box.x + box.width * 0.6 + 75,
-    box.y + box.height * 0.6 + 10,
-    { steps: 8 },
+    box.x + box.width * 0.6 + 60,
+    box.y + box.height * 0.65 + 10,
+    { steps: 5 },
   );
   await page.mouse.up();
-  await page.waitForTimeout(200);
+  await page.waitForTimeout(250);
   expect((await state(page)).camera).not.toEqual(before);
   const dragged = (await state(page)).camera;
-  await page.mouse.wheel(0, 200);
+  await page.mouse.wheel(0, 160);
   await page.waitForTimeout(200);
   expect((await state(page)).camera).not.toEqual(dragged);
   await page.locator("canvas").focus();
-  const keyBefore = (await state(page)).camera;
+  const keyboard = (await state(page)).camera;
   await page.keyboard.press("ArrowLeft");
-  await page.waitForTimeout(200);
-  expect((await state(page)).camera).not.toEqual(keyBefore);
+  await page.waitForTimeout(100);
+  expect((await state(page)).camera).not.toEqual(keyboard);
   await page.locator("#auto-rotate").click();
-  const rotating = (await state(page)).camera;
+  const auto = (await state(page)).camera;
   await page.waitForTimeout(250);
-  expect((await state(page)).camera).not.toEqual(rotating);
+  expect((await state(page)).camera).not.toEqual(auto);
   await page.locator("#reset").click();
   await expect(page.locator("#auto-rotate")).toHaveAttribute(
     "aria-pressed",
@@ -111,155 +140,179 @@ test("drag, wheel, keyboard, presets and auto rotation move the camera", async (
   );
 });
 
-test("search, empty results, tab keyboard, and about dialog", async ({
+test("slow illustrative animation shows a moving projectile and recoil, supports pause and reset", async ({
   page,
 }) => {
   await ready(page);
-  await page.getByRole("searchbox").fill("colt");
-  await expect(page.locator(".exhibit-card:visible")).toHaveCount(1);
-  await page.getByRole("searchbox").fill("不存在");
-  await expect(page.locator("#no-results")).toBeVisible();
-  await page.getByRole("searchbox").fill("");
-  await expect(page.locator(".exhibit-card:visible")).toHaveCount(3);
-  await page.locator("#tab-observe").focus();
-  await page.keyboard.press("ArrowRight");
-  await expect(page.locator("#panel-facts")).toBeVisible();
-  await page.keyboard.press("ArrowLeft");
-  await expect(page.locator("#panel-observe")).toBeVisible();
-  await page.locator("#about-open").click();
-  await expect(page.locator("dialog")).toBeVisible();
-  await expect(page.locator("#all-sources a")).toHaveCount(3);
-  await page.keyboard.press("Escape");
-  await expect(page.locator("dialog")).not.toBeVisible();
+  await page.locator("#shoot").click();
+  await expect(page.locator("#viewer")).toHaveAttribute(
+    "data-animation",
+    "playing",
+  );
+  await expect
+    .poll(async () => (await state(page)).animation?.projectileVisible)
+    .toBe(true);
+  const a = (await state(page)).animation;
+  expect(a.recoil).toBeGreaterThan(0);
+  await page.waitForTimeout(250);
+  expect((await state(page)).animation.projectile[0]).toBeLessThan(
+    a.projectile[0],
+  );
+  await page.locator("#animation-pause").click();
+  const paused = (await state(page)).animation.progress;
+  await page.waitForTimeout(250);
+  expect((await state(page)).animation.progress).toBe(paused);
+  await expect(page.locator("#animation-pause")).toHaveText("继续动画");
+  await page.locator("#animation-pause").click();
+  await expect
+    .poll(async () => (await state(page)).animation.progress)
+    .toBeGreaterThan(paused);
+  await page.locator("#reset").click();
+  expect((await state(page)).animation).toBe(null);
+  await expect(page.locator("#animation-caption")).toBeHidden();
 });
 
-test("experiment changes velocity ratio and quiz gives corrective feedback across all three scenarios", async ({
+test("switching models during an animation stops old motion and narration", async ({
   page,
 }) => {
   await ready(page);
-  await page.locator("#mass").fill("4");
-  await page.locator("#run-experiment").click();
-  await expect(page.locator("#lab-result")).toContainText("B 车向右 0.5 m/s");
-  await expect(page.locator("#lab-result")).toContainText("1/4");
-  await page.locator("#mass").fill("1");
-  await page.locator("#run-experiment").click();
-  await expect(page.locator("#lab-result")).toContainText("质量相同");
-  await page.locator('.quiz-option[data-option="1"]').click();
-  await expect(page.locator("#quiz-feedback")).toContainText("更安全");
-  await page.locator("#quiz-next").click();
-  await page.locator('.quiz-option[data-option="1"]').click();
-  await expect(page.locator("#quiz-feedback")).toContainText("答对了");
-  await page.locator("#quiz-next").click();
-  await page.locator('.quiz-option[data-option="2"]').click();
-  await expect(page.locator("#quiz-next")).toContainText("完成啦");
-  await page.locator("#quiz-next").click();
-  await expect(page.locator("#quiz-number")).toHaveText("01 / 03");
+  await page.locator("#shoot").click();
+  await page.locator('.exhibit-card[data-id="92fs"]').click();
+  await expect
+    .poll(async () => (await state(page)).model, { timeout: 20000 })
+    .toBe("92fs");
+  expect((await state(page)).animation).toBe(null);
+  await expect
+    .poll(async () => (await state(page)).audio.src || "")
+    .toContain("92fs-intro.mp3");
 });
 
-test("missing speech support is explicit and text stays available", async ({
+test("bundled narration plays without speechSynthesis and can pause, resume and change speed", async ({
   page,
 }) => {
   await page.addInitScript(() =>
     Object.defineProperty(window, "speechSynthesis", { value: undefined }),
   );
   await ready(page);
-  await expect(page.locator("#speech-status")).toContainText("不支持语音");
-  await expect(page.locator("#speak")).toBeDisabled();
-  await page.locator('.region-button[data-region="upper"]').click();
-  await expect(page.locator("#region-description")).not.toBeEmpty();
-});
-
-test("no Chinese voice is explicit", async ({ page }) => {
-  await page.addInitScript(() =>
-    Object.defineProperty(window, "speechSynthesis", {
-      value: {
-        getVoices: () => [],
-        addEventListener() {},
-        cancel() {},
-        resume() {},
-      },
-    }),
-  );
-  await ready(page);
-  await expect(page.locator("#speech-status")).toContainText("未发现中文声音");
-  await expect(page.locator("#speak")).toBeDisabled();
-});
-
-test("speech play, pause, resume, rate changes and switching exhibits cancel stale narration", async ({
-  page,
-}) => {
-  await page.addInitScript(() => {
-    window.speechCalls = [];
-    Object.defineProperty(window, "speechSynthesis", {
-      value: {
-        getVoices: () => [{ lang: "zh-CN", name: "Test Chinese" }],
-        addEventListener() {},
-        speak(u) {
-          speechCalls.push(["speak", u.text, u.rate]);
-          queueMicrotask(() => u.onstart());
-        },
-        cancel() {
-          speechCalls.push(["cancel"]);
-        },
-        pause() {
-          speechCalls.push(["pause"]);
-        },
-        resume() {
-          speechCalls.push(["resume"]);
-        },
-      },
-    });
-    window.SpeechSynthesisUtterance = class {
-      constructor(text) {
-        this.text = text;
-      }
-    };
-  });
-  await ready(page);
-  await page.locator("#speak").click();
-  await expect(page.locator("#speech-status")).toContainText("正在朗读");
+  await page.locator('.region-button[data-region="grip"]').click();
+  await expect
+    .poll(async () => (await state(page)).audio.state, { timeout: 15000 })
+    .toBe("speaking");
+  await expect
+    .poll(async () => (await state(page)).audio.currentTime)
+    .toBeGreaterThan(0.05);
+  expect((await state(page)).audio.duration).toBeGreaterThan(2);
   await page.locator("#pause").click();
   await expect(page.locator("#pause")).toHaveText("继续");
-  await page.locator("#pause").click();
-  await expect(page.locator("#pause")).toHaveText("暂停");
+  const time = (await state(page)).audio.currentTime;
+  await page.waitForTimeout(200);
+  expect((await state(page)).audio.currentTime).toBeCloseTo(time, 1);
   await page.locator("#speech-rate").selectOption("0.8");
-  await expect(page.locator("#speech-status")).toContainText("语速已更新");
-  await page.locator("#speak").click();
-  expect(
-    await page.evaluate(
-      () => speechCalls.filter((c) => c[0] === "speak").at(-1)[2],
-    ),
-  ).toBe(0.8);
-  await page.locator('.exhibit-card[data-id="92fs"]').click();
-  await expect(page.locator("#pause")).toBeDisabled();
-  await expect(page.locator("#speech-status")).toContainText("已就绪");
+  expect((await state(page)).audio.rate).toBe(0.8);
+  await page.locator("#pause").click();
+  await expect
+    .poll(async () => (await state(page)).audio.currentTime)
+    .toBeGreaterThan(time);
+  await page.locator("#stop").click();
+  expect((await state(page)).audio.state).toBe("idle");
 });
 
-test("model download errors are recoverable with retry", async ({ page }) => {
+test("automatic narration can be disabled without disabling part selection", async ({
+  page,
+}) => {
+  await ready(page);
+  await page.locator("#auto-speech").uncheck();
+  await page.locator('.region-button[data-region="barrel"]').click();
+  expect((await state(page)).active).toBe("barrel");
+  expect((await state(page)).audio.state).toBe("idle");
+  await page.locator("#speak").click();
+  await expect
+    .poll(async () => (await state(page)).audio.state)
+    .toBe("speaking");
+});
+
+test("audio failure shows a retry message and a second attempt works", async ({
+  page,
+}) => {
   let fail = true;
-  await page.route("**/models/g17.glb", (route) =>
+  await page.route("**/audio/g17-grip.mp3*", (route) =>
+    fail ? route.abort() : route.continue(),
+  );
+  await ready(page);
+  await page.locator('.region-button[data-region="grip"]').click();
+  await expect(page.locator("#speech-status")).toContainText("重试");
+  fail = false;
+  await page.locator("#speak").click();
+  await expect
+    .poll(async () => (await state(page)).audio.state, { timeout: 15000 })
+    .toBe("speaking");
+});
+
+test("reference panel exposes citations and the Colt capacity conflict", async ({
+  page,
+}) => {
+  await ready(page);
+  await page.locator('.exhibit-card[data-id="1911"]').click();
+  await page.getByRole("tab", { name: "型号资料" }).click();
+  await expect(page.locator("#facts")).toContainText("官方字段冲突");
+  await expect(page.locator("#source")).toHaveAttribute("href", /colt.com/);
+  await page.locator("#about-open").click();
+  await expect(page.locator("dialog")).toContainText(
+    "后两款未取得可靠完整三视图",
+  );
+  await expect(page.locator("#all-sources a")).toHaveCount(3);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("dialog")).toBeHidden();
+});
+
+test("old physics and quiz content is removed; Chinese search and empty results work", async ({
+  page,
+}) => {
+  await ready(page);
+  await expect(
+    page.locator("#lab,#safety,#quiz-options,#run-experiment"),
+  ).toHaveCount(0);
+  await expect(page.locator("body")).not.toContainText("小车");
+  await page.getByRole("searchbox").fill("柯尔特");
+  await expect(page.locator(".exhibit-card:visible")).toHaveCount(1);
+  await page.getByRole("searchbox").fill("没有这个");
+  await expect(page.locator("#no-results")).toBeVisible();
+  await page.getByRole("searchbox").fill("");
+  await expect(page.locator(".exhibit-card:visible")).toHaveCount(3);
+});
+
+test("model request failure supports retry and keeps the narration controls", async ({
+  page,
+}) => {
+  let fail = true;
+  await page.route("**/models/g17.glb*", (route) =>
     fail ? route.abort() : route.continue(),
   );
   await page.goto("./");
   await expect(page.locator("#viewer")).toHaveAttribute("data-state", "error");
-  await expect(page.locator("#exhibit-name")).toHaveText("GLOCK 17");
+  await expect(page.locator(".region-button")).toHaveCount(11);
   fail = false;
   await page.locator("#load-state").click();
-  await expect(page.locator("#viewer")).toHaveAttribute("data-state", "ready");
+  await expect(page.locator("#viewer")).toHaveAttribute("data-state", "ready", {
+    timeout: 20000,
+  });
 });
 
-test("rapid exhibit switching displays only the last selection", async ({
+test("the static model stops redrawing and highlighting wakes it", async ({
   page,
 }) => {
   await ready(page);
-  await page.locator('.exhibit-card[data-id="92fs"]').click();
-  await page.locator('.exhibit-card[data-id="1911"]').click();
-  await expect.poll(async () => (await state(page)).model).toBe("1911");
-  await expect(page.locator("#exhibit-name")).toHaveText("Colt 1911");
+  await page.waitForTimeout(450);
+  const before = (await state(page)).frames;
+  await page.waitForTimeout(350);
+  expect((await state(page)).frames).toBe(before);
+  await page.locator('.region-button[data-region="slide"]').click();
+  await expect
+    .poll(async () => (await state(page)).frames)
+    .toBeGreaterThan(before);
 });
-
 for (const width of [390, 768])
-  test(`responsive ${width}px: no overflow, exhibits and region controls remain usable`, async ({
+  test(`responsive ${width}px fits and supports narrated parts and motion controls`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 844 });
@@ -270,27 +323,15 @@ for (const width of [390, 768])
       ),
     ).toBe(true);
     await page.locator('.exhibit-card[data-id="1911"]').click();
-    await expect.poll(async () => (await state(page)).model).toBe("1911");
-    await page.locator('.region-button[data-region="grip"]').click();
-    await expect(page.locator("#region-name")).toHaveText("握把表面");
+    await expect
+      .poll(async () => (await state(page)).model, { timeout: 20000 })
+      .toBe("1911");
+    await page.locator('.region-button[data-region="rear"]').click();
+    await expect(page.locator("#region-name")).toHaveText("击锤外形");
     await page.locator("#reset").click();
-    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
     await page.screenshot({
-      path: `reports/mobile-${width}.png`,
+      path: `reports/v2/mobile-${width}.png`,
       fullPage: true,
     });
   });
-
-test("the idle exhibit stops redrawing, then resumes when interacted with", async ({
-  page,
-}) => {
-  await ready(page);
-  await page.waitForTimeout(500);
-  const before = (await state(page)).frames;
-  await page.waitForTimeout(400);
-  expect((await state(page)).frames).toBe(before);
-  await page.locator('.region-button[data-region="upper"]').click();
-  await expect
-    .poll(async () => (await state(page)).frames)
-    .toBeGreaterThan(before);
-});

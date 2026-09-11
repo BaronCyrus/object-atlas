@@ -1,109 +1,81 @@
 export class GuideSpeech {
   constructor({ status, play, pause, stop, rate }) {
     Object.assign(this, { status, play, pause, stop, rate });
-    this.synth = window.speechSynthesis;
     this.state = "idle";
     this.generation = 0;
-    this.supported = !!this.synth && "SpeechSynthesisUtterance" in window;
-    if (this.supported) {
-      this.synth.addEventListener("voiceschanged", () => this.refresh());
-    }
-    this.refresh();
+    this.audio = null;
+    this.mode = "recorded";
+    play.disabled = false;
+    status.textContent = "中文音频已备好，点一个部位就会讲。";
     pause.addEventListener("click", () => this.togglePause());
     stop.addEventListener("click", () => this.cancel());
     rate.addEventListener("change", () => {
-      if (this.state === "speaking" || this.state === "paused") {
-        this.cancel();
-        this.status.textContent = "语速已更新，点击「听讲解」重新朗读。";
-      }
+      if (this.audio) this.audio.playbackRate = Number(rate.value);
     });
-    window.addEventListener("pagehide", () => this.cancel());
+    window.addEventListener("pagehide", () => this.cancel(false));
   }
-  refresh() {
-    this.voice = this.supported
-      ? this.synth.getVoices().find((v) => /^zh[-_]?(CN|Hans)/i.test(v.lang)) ||
-        this.synth.getVoices().find((v) => /^zh/i.test(v.lang))
-      : null;
-    this.play.disabled = !this.voice;
-    if (this.state === "idle")
-      this.status.textContent = !this.supported
-        ? "此浏览器不支持语音，完整讲解可直接阅读。"
-        : !this.voice
-          ? "未发现中文声音，请使用文字讲解，或在系统中安装中文语音。"
-          : "中文声音已就绪，点击播放。";
-  }
-  speak(text) {
-    if (!this.voice) return;
+  speak(text, url) {
     this.cancel(false);
     const generation = this.generation;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.voice = this.voice;
-    utterance.lang = this.voice.lang;
-    utterance.rate = Number(this.rate.value);
-    this.utterance = utterance;
     this.state = "starting";
     this.play.disabled = true;
     this.stop.disabled = false;
-    this.status.textContent = "正在准备朗读…";
-    const valid = () => generation === this.generation;
-    utterance.onstart = () => {
+    this.status.textContent = "正在准备讲解…";
+    this.text = text;
+    const valid = () => this.generation === generation;
+    const audio = new Audio(url);
+    this.audio = audio;
+    audio.preload = "auto";
+    audio.playbackRate = Number(this.rate.value);
+    audio.onplaying = () => {
       if (!valid()) return;
-      clearTimeout(this.watchdog);
       this.state = "speaking";
       this.pause.disabled = false;
-      this.status.textContent = "正在朗读当前讲解…";
+      this.pause.textContent = "暂停";
+      this.status.textContent = "正在讲解…";
     };
-    utterance.onend = () => {
-      if (!valid()) return;
-      this.finish("朗读结束。可以选择另一个观察区。");
+    audio.onended = () => {
+      if (valid()) this.finish("讲完啦。再点一个部位吧。");
     };
-    utterance.onerror = (e) => {
-      if (!valid()) return;
+    audio.onerror = () => {
+      if (valid()) this.finish("音频暂时没有加载成功，点「再听一遍」重试。");
+    };
+    audio.play().catch((error) => {
+      if (!valid() || error.name === "AbortError") return;
       this.finish(
-        e.error === "canceled"
-          ? "朗读已停止。"
-          : "语音暂时不可用，请阅读文字讲解。",
+        error.name === "NotAllowedError"
+          ? "请点「再听一遍」开启声音。"
+          : "声音暂时不可用，点「再听一遍」重试。",
       );
-    };
-    this.watchdog = setTimeout(() => {
-      if (valid() && this.state === "starting") {
-        this.cancel(false);
-        this.status.textContent = "声音未能启动，请重试或阅读文字讲解。";
-      }
-    }, 8000);
-    this.synth.speak(utterance);
+    });
   }
   finish(message) {
-    clearTimeout(this.watchdog);
     this.state = "idle";
-    this.play.disabled = !this.voice;
+    this.play.disabled = false;
     this.pause.disabled = true;
     this.stop.disabled = true;
     this.pause.textContent = "暂停";
     this.status.textContent = message;
-    this.utterance = null;
   }
   cancel(show = true) {
     this.generation++;
-    clearTimeout(this.watchdog);
-    if (this.supported) {
-      this.synth.cancel();
-      this.synth.resume();
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.onplaying = null;
+      this.audio.onended = null;
+      this.audio.onerror = null;
+      this.audio = null;
     }
-    this.finish(show ? "朗读已停止。" : "");
-    if (!show) this.refresh();
+    this.finish(show ? "讲解已停止。" : "点一个部位，听听它叫什么。");
   }
   togglePause() {
-    if (this.state === "speaking") {
-      this.synth.pause();
+    if (this.state === "speaking" && this.audio) {
+      this.audio.pause();
       this.state = "paused";
       this.pause.textContent = "继续";
-      this.status.textContent = "朗读已暂停。";
-    } else if (this.state === "paused") {
-      this.synth.resume();
-      this.state = "speaking";
-      this.pause.textContent = "暂停";
-      this.status.textContent = "正在朗读当前讲解…";
+      this.status.textContent = "讲解已暂停。";
+    } else if (this.state === "paused" && this.audio) {
+      this.audio.play().catch(() => this.finish("请重新播放讲解。"));
     }
   }
 }

@@ -1,0 +1,187 @@
+[
+  {
+    "id": "animation",
+    "duration": 10.375,
+    "bytes": 83756
+  },
+  {
+    "id": "g17-intro",
+    "duration": 8.475,
+    "bytes": 68588
+  },
+  {
+    "id": "g17-slide",
+    "duration": 8.85,
+    "bytes": 71468
+  },
+  {
+    "id": "g17-barrel",
+    "duration": 7.55,
+    "bytes": 61100
+  },
+  {
+    "id": "g17-frame",
+    "duration": 7.375,
+    "bytes": 59756
+  },
+  {
+    "id": "g17-grip",
+    "duration": 7.3,
+    "bytes": 59180
+  },
+  {
+    "id": "g17-guard",
+    "duration": 8.1,
+    "bytes": 65516
+  },
+  {
+    "id": "g17-trigger",
+    "duration": 7.775,
+    "bytes": 62828
+  },
+  {
+    "id": "g17-front_sight",
+    "duration": 6.875,
+    "bytes": 55724
+  },
+  {
+    "id": "g17-rear_sight",
+    "duration": 7.2,
+    "bytes": 58220
+  },
+  {
+    "id": "g17-magazine",
+    "duration": 7.225,
+    "bytes": 58604
+  },
+  {
+    "id": "g17-controls",
+    "duration": 9.875,
+    "bytes": 79724
+  },
+  {
+    "id": "g17-rear",
+    "duration": 9.85,
+    "bytes": 79532
+  },
+  {
+    "id": "92fs-intro",
+    "duration": 9.825,
+    "bytes": 79340
+  },
+  {
+    "id": "92fs-slide",
+    "duration": 9.175,
+    "bytes": 74156
+  },
+  {
+    "id": "92fs-barrel",
+    "duration": 7.55,
+    "bytes": 61100
+  },
+  {
+    "id": "92fs-frame",
+    "duration": 7.375,
+    "bytes": 59756
+  },
+  {
+    "id": "92fs-grip",
+    "duration": 7.075,
+    "bytes": 57260
+  },
+  {
+    "id": "92fs-guard",
+    "duration": 8.1,
+    "bytes": 65516
+  },
+  {
+    "id": "92fs-trigger",
+    "duration": 7.775,
+    "bytes": 62828
+  },
+  {
+    "id": "92fs-front_sight",
+    "duration": 6.875,
+    "bytes": 55724
+  },
+  {
+    "id": "92fs-rear_sight",
+    "duration": 7.2,
+    "bytes": 58220
+  },
+  {
+    "id": "92fs-magazine",
+    "duration": 7.225,
+    "bytes": 58604
+  },
+  {
+    "id": "92fs-controls",
+    "duration": 9.875,
+    "bytes": 79724
+  },
+  {
+    "id": "92fs-rear",
+    "duration": 8.0,
+    "bytes": 64748
+  },
+  {
+    "id": "1911-intro",
+    "duration": 8.15,
+    "bytes": 65900
+  },
+  {
+    "id": "1911-slide",
+    "duration": 7.35,
+    "bytes": 59564
+  },
+  {
+    "id": "1911-barrel",
+    "duration": 7.55,
+    "bytes": 61100
+  },
+  {
+    "id": "1911-frame",
+    "duration": 7.375,
+    "bytes": 59756
+  },
+  {
+    "id": "1911-grip",
+    "duration": 8.625,
+    "bytes": 69740
+  },
+  {
+    "id": "1911-guard",
+    "duration": 8.1,
+    "bytes": 65516
+  },
+  {
+    "id": "1911-trigger",
+    "duration": 7.775,
+    "bytes": 62828
+  },
+  {
+    "id": "1911-front_sight",
+    "duration": 6.875,
+    "bytes": 55724
+  },
+  {
+    "id": "1911-rear_sight",
+    "duration": 7.2,
+    "bytes": 58220
+  },
+  {
+    "id": "1911-magazine",
+    "duration": 7.225,
+    "bytes": 58604
+  },
+  {
+    "id": "1911-controls",
+    "duration": 9.875,
+    "bytes": 79724
+  },
+  {
+    "id": "1911-rear",
+    "duration": 9.125,
+    "bytes": 73772
+  }
+]

@@ -9,3 +9,7 @@ playwright-report/
 reports/*.log
 reports/test-results.json
 reports/*initial.png
+
+.reference-images/
+.voice-models/
+.venv/
