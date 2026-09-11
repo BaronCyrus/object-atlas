@@ -59,7 +59,7 @@ blender --background --factory-startup --python scripts/generate_models.py
 blender --background models/g17.blend --python scripts/render_preview.py -- g17
 ```
 
-生成器只新建 `Atlas_` 场景，保留已有场景和文件。推荐使用上面的独立后台进程，以免影响正在编辑的文件。重复运行交互式版本会创建新的 Atlas 场景，建议在新的 Blender 会话生成。每个 GLB 顶层有 `upper`、`frame`、`grip`、`guard` 四组，网格通过 `extras.region` 标注观察区。Blender 场景单位是任意展示单位，不提供真实尺度。
+生成器只新建 `Atlas_` 场景，保留已有场景和文件。推荐使用上面的独立后台进程，以免影响正在编辑的文件。重复运行交互式版本会创建新的 Atlas 场景，建议在新的 Blender 会话生成。网页会按区域与材质合并绘制网格，并在画面静止或离开可视区时停止重绘。每个 GLB 顶层有 `upper`、`frame`、`grip`、`guard` 四组，网格通过 `extras.region` 标注观察区。Blender 场景单位是任意展示单位，不提供真实尺度。
 
 本次先通过 Blender MCP 读取现有场景并执行建模；GUI 实例在文件导出阶段无响应，后续生成、导出与配图渲染由本机 Blender 5.2.1 独立后台进程完成。未覆盖用户原有工程。没有使用收费生成服务或第三方下载模型。
 
@@ -67,11 +67,11 @@ blender --background models/g17.blend --python scripts/render_preview.py -- g17
 
 核对日期：2026-09-11。只提取与识别展品相关的少量事实，讲解为项目原创。
 
-| 展品 / 指定版本 | 口径标识 | 标准弹匣容量 | 官方来源 |
-| --- | --- | --- | --- |
-| GLOCK 17 Gen5 | 9 mm Luger | 17 | [GLOCK G17 Gen5](https://br.glock.com/pt-br/pistolas/g17-gen5) |
-| Beretta 92FS，9×19 mm 标准型 | 9×19 mm | 15 | [Beretta Defense 92FS](https://www.berettadefense.com/products/92fs-bdt/) |
-| Colt 1911 Classic SS，.45 ACP | .45 ACP | 7 | [Colt Classic SS](https://www.colt.com/detail-page/1911-classic-ss/) |
+| 展品 / 指定版本               | 口径标识   | 标准弹匣容量 | 官方来源                                                                  |
+| ----------------------------- | ---------- | ------------ | ------------------------------------------------------------------------- |
+| GLOCK 17 Gen5                 | 9 mm Luger | 17           | [GLOCK G17 Gen5](https://br.glock.com/pt-br/pistolas/g17-gen5)            |
+| Beretta 92FS，9×19 mm 标准型  | 9×19 mm    | 15           | [Beretta Defense 92FS](https://www.berettadefense.com/products/92fs-bdt/) |
+| Colt 1911 Classic SS，.45 ACP | .45 ACP    | 7            | [Colt Classic SS](https://www.colt.com/detail-page/1911-classic-ss/)      |
 
 容量不含膛内数量，不同版本与地区配置可能不同。Colt 页面有多种变体，本项目采用 .45 ACP 版本的官方图示规格。未给出缺少统一依据的后坐力排名。小车实验采用理想水平无摩擦模型，初始总动量为零，给两车大小相同、方向相反的冲量；展示速度与质量成反比，不拟合真实枪械。
 
